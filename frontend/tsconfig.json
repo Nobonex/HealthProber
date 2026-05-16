@@ -6,7 +6,6 @@
     "outDir": "./dist/out-tsc",
     "rootDir": "./src",
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
     "paths": {
       "@app/*": [
         "src/app/*"
