@@ -8,8 +8,13 @@ public class TrayApplicationContext : ApplicationContext
     private readonly NotifyIcon _trayIcon;
     private readonly int _port;
     private readonly CancellationTokenSource _cts;
+    private readonly ToolStripMenuItem _installUpdateItem;
 
-    public TrayApplicationContext(int port, CancellationTokenSource cts)
+    public TrayApplicationContext(
+        int port,
+        CancellationTokenSource cts,
+        Func<Task> onCheckForUpdates,
+        Func<Task> onInstallUpdate)
     {
         _port = port;
         _cts = cts;
@@ -24,6 +29,17 @@ public class TrayApplicationContext : ApplicationContext
         var menu = new ContextMenuStrip();
         menu.Items.Add("Open HealthProber", null, OnOpenClicked);
         menu.Items.Add(new ToolStripSeparator());
+
+        var checkUpdateItem = new ToolStripMenuItem("Check for Updates", null, async (s, e) => await onCheckForUpdates());
+        menu.Items.Add(checkUpdateItem);
+
+        _installUpdateItem = new ToolStripMenuItem("Install Update & Restart", null, async (s, e) => await onInstallUpdate())
+        {
+            Enabled = false
+        };
+        menu.Items.Add(_installUpdateItem);
+
+        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Exit", null, OnExitClicked);
 
         _trayIcon.ContextMenuStrip = menu;
@@ -34,10 +50,13 @@ public class TrayApplicationContext : ApplicationContext
         _trayIcon.ShowBalloonTip(3000);
     }
 
-    public void ShowUpdateAvailable(string version)
+    public void EnableInstallUpdate(string version)
     {
+        _installUpdateItem.Text = $"Install Update & Restart ({version})";
+        _installUpdateItem.Enabled = true;
+
         _trayIcon.BalloonTipTitle = "HealthProber Update Available";
-        _trayIcon.BalloonTipText = $"Version {version} is available. Click 'Check for Updates' in the tray menu.";
+        _trayIcon.BalloonTipText = $"Version {version} is available. Right-click the tray icon to install.";
         _trayIcon.ShowBalloonTip(5000);
     }
 

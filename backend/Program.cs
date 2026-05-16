@@ -58,7 +58,6 @@ try
 {
     webHostTask = app.RunAsync(cts.Token);
 
-    // Give Kestrel a moment to start; if it faults (e.g. port in use) we surface it here.
     var startupTimeout = Task.Delay(TimeSpan.FromSeconds(3), cts.Token);
     var completed = await Task.WhenAny(webHostTask, startupTimeout);
 
@@ -70,7 +69,6 @@ try
 catch (IOException ex) when (ex.Message.Contains("Failed to bind", StringComparison.OrdinalIgnoreCase)
                            || ex.Message.Contains("address already in use", StringComparison.OrdinalIgnoreCase))
 {
-    // Port conflict before the tray icon is shown.
     const uint mbYesNo = 0x04;
     const uint mbIconQuestion = 0x20;
     const int idYes = 6;
@@ -95,8 +93,84 @@ catch (IOException ex) when (ex.Message.Contains("Failed to bind", StringCompari
     return;
 }
 
+TrayApplicationContext? trayContext = null;
+
+async Task CheckForUpdatesAsync()
+{
+    try
+    {
+        var updateService = app.Services.GetRequiredService<IAppUpdateService>();
+        var update = await updateService.CheckForUpdateAsync(cts.Token);
+
+        if (update?.TargetFullRelease != null)
+        {
+            var version = update.TargetFullRelease.Version.ToString();
+            trayContext?.EnableInstallUpdate(version);
+
+            const uint mbYesNo = 0x04;
+            const uint mbIconInformation = 0x40;
+            const int idYes = 6;
+            var result = NativeMethods.MessageBox(
+                0,
+                $"Update {version} is available. Would you like to install it now?",
+                "HealthProber Update",
+                mbYesNo | mbIconInformation);
+
+            if (result == idYes)
+            {
+                await InstallUpdateAsync();
+            }
+        }
+        else
+        {
+            NativeMethods.MessageBox(
+                0,
+                "You are already on the latest version.",
+                "HealthProber",
+                0x40); // MB_ICONINFORMATION
+        }
+    }
+    catch (Exception ex)
+    {
+        NativeMethods.MessageBox(
+            0,
+            $"Failed to check for updates: {ex.Message}",
+            "HealthProber",
+            0x10); // MB_ICONERROR
+    }
+}
+
+async Task InstallUpdateAsync()
+{
+    const uint mbYesNo = 0x04;
+    const uint mbIconQuestion = 0x20;
+    const int idYes = 6;
+    var result = NativeMethods.MessageBox(
+        0,
+        "The application will restart to apply the update. Continue?",
+        "HealthProber Update",
+        mbYesNo | mbIconQuestion);
+
+    if (result != idYes)
+        return;
+
+    try
+    {
+        var updateService = app.Services.GetRequiredService<IAppUpdateService>();
+        await updateService.DownloadAndInstallUpdateAsync(cts.Token);
+    }
+    catch (Exception ex)
+    {
+        NativeMethods.MessageBox(
+            0,
+            $"Failed to install update: {ex.Message}",
+            "HealthProber",
+            0x10); // MB_ICONERROR
+    }
+}
+
 // Web host started successfully — run the tray icon on the main (UI) thread.
-var trayContext = new TrayApplicationContext(serverPort, cts);
+trayContext = new TrayApplicationContext(serverPort, cts, CheckForUpdatesAsync, InstallUpdateAsync);
 
 // Background update check
 _ = Task.Run(async () =>
@@ -108,7 +182,7 @@ _ = Task.Run(async () =>
         var update = await updateService.CheckForUpdateAsync(cts.Token);
         if (update?.TargetFullRelease != null)
         {
-            trayContext.ShowUpdateAvailable(update.TargetFullRelease.Version.ToString());
+            trayContext.EnableInstallUpdate(update.TargetFullRelease.Version.ToString());
         }
     }
     catch (OperationCanceledException)
