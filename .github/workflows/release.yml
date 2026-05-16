@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-release:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -28,7 +30,7 @@ jobs:
         shell: pwsh
         run: |
           $tag = "${{ github.ref_name }}"
-          $version = $tag -replace '^v',''
+          $version = $tag -replace '^[vV]',''
           Write-Output "VERSION=$version" >> $env:GITHUB_OUTPUT
           Write-Host "Building version: $version"
 
