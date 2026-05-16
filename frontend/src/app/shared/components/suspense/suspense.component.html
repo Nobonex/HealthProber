@@ -1,0 +1,13 @@
+@if ($result().loading) {
+    <div class="fallback">
+        <health-prober-spinner [$visible]="$result().loading" />
+    </div>
+} @else if ($result().error !== null) {
+    @if ($errorRef() === null) {
+        <p>Er ging iets mis tijdens het laden: {{ $result().error }}</p>
+    } @else {
+        <ng-container [ngTemplateOutlet]="$errorRef()"></ng-container>
+    }
+} @else {
+    <ng-container [ngTemplateOutlet]="$ref()" />
+}

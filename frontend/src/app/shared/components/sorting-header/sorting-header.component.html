@@ -1,0 +1,12 @@
+<div (click)="sortBy()" (keydown.enter)="sortBy()" (keydown.space)="sortBy()" role="button" tabindex="0" class="sorting-header">
+    <ng-content/>
+    @if ($isActive()) {
+        @if ($sortingOrder() === SortingOrder.Ascending) {
+            &uarr;
+        } @else {
+            &darr;
+        }
+    } @else {
+        -
+    }
+</div>

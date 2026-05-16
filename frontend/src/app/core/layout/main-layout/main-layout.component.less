@@ -1,0 +1,113 @@
+@header-height: 64px;
+
+.hp-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: @header-height;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: var(--hp-header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--hp-header-border);
+    transition: background-color var(--hp-transition), border-color var(--hp-transition);
+}
+
+.hp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.hp-wordmark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--hp-text);
+
+    &:hover {
+        opacity: 0.85;
+    }
+}
+
+.hp-pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--hp-success);
+    box-shadow: 0 0 8px var(--hp-glow-success);
+    animation: hp-pulse 2.5s ease-in-out infinite;
+}
+
+.hp-wordmark-text {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--hp-text);
+}
+
+.hp-back-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 16px;
+    border-left: 1px solid var(--hp-card-border);
+
+    button {
+        color: var(--hp-text-muted);
+
+        &:hover {
+            color: var(--hp-text);
+            background: var(--hp-card-border);
+        }
+    }
+}
+
+.hp-page-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--hp-text-secondary);
+}
+
+.hp-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hp-theme-toggle {
+    color: var(--hp-text-secondary);
+    font-size: 16px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--hp-transition-fast), background var(--hp-transition-fast), border-color var(--hp-transition-fast);
+
+    &:hover {
+        color: var(--hp-text);
+        background: rgba(0, 0, 0, 0.04);
+        border-color: var(--hp-card-border-hover);
+    }
+
+    [data-theme="dark"] &:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+}
+
+.hp-main {
+    padding-top: @header-height + 16px;
+    min-height: 100dvh;
+    background: var(--hp-bg);
+    transition: background-color var(--hp-transition);
+}

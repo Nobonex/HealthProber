@@ -1,0 +1,6 @@
+<div class="paginator">
+    <button (click)="previousPage()" [disabled]="!$hasPrevious()">Previous</button>
+    <div>Page: {{ $currentPage() }}</div>
+    <button (click)="nextPage()" [disabled]="!$hasNext()">Next</button>
+    <div>Total items: {{ $totalItems() }}</div>
+</div>

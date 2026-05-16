@@ -1,0 +1,30 @@
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    transition: all var(--hp-transition);
+
+    .status-icon {
+        font-size: 14px;
+        color: #fff;
+    }
+
+    &.status-healthy {
+        background: var(--hp-success);
+        box-shadow: 0 0 12px var(--hp-glow-success);
+    }
+
+    &.status-partial {
+        background: var(--hp-warning);
+        box-shadow: 0 0 12px var(--hp-glow-warning);
+    }
+
+    &.status-out {
+        background: var(--hp-error);
+        box-shadow: 0 0 12px var(--hp-glow-error);
+        animation: hp-pulse 2s ease-in-out infinite;
+    }
+}

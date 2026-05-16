@@ -1,0 +1,129 @@
+.dashboard-page {
+    padding: 0 24px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Summary Bar */
+.summary-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--hp-card-border);
+    background: var(--hp-card-bg);
+    cursor: pointer;
+    transition: all var(--hp-transition);
+    font-family: inherit;
+
+    &:hover {
+        border-color: var(--hp-card-border-hover);
+        box-shadow: var(--hp-shadow);
+    }
+
+    &.active {
+        border-color: var(--hp-primary);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+}
+
+.pill-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.pill-count {
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.pill-label {
+    font-size: 13px;
+    color: var(--hp-text-muted);
+    font-weight: 500;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.search-input {
+    max-width: 320px;
+    width: 100%;
+}
+
+.sort-select {
+    width: 200px;
+}
+
+.toolbar-right {
+    button {
+        border-radius: var(--hp-radius);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            color: var(--hp-text);
+            background: var(--hp-card-border);
+        }
+    }
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    gap: 16px;
+}
+
+.empty-icon {
+    margin-bottom: 8px;
+}
+
+.empty-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--hp-text);
+    margin: 0;
+}
+
+.empty-subtitle {
+    font-size: 15px;
+    color: var(--hp-text-muted);
+    margin: 0;
+    max-width: 400px;
+}
+
+/* Card Grid */
+.card-grid {
+    margin-top: 4px;
+}

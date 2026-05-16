@@ -1,0 +1,269 @@
+.detail-page {
+    padding: 16px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Status hero card */
+.status-hero {
+    background: var(--hp-card-bg);
+    border: 1px solid var(--hp-card-border);
+    border-radius: var(--hp-radius-lg);
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: border-color var(--hp-transition), box-shadow var(--hp-transition);
+    box-shadow: var(--hp-shadow-sm);
+
+    &.healthy {
+        border-left: 4px solid var(--hp-success);
+    }
+
+    &.warning {
+        border-left: 4px solid var(--hp-warning);
+    }
+
+    &.critical {
+        border-left: 4px solid var(--hp-error);
+    }
+}
+
+.hero-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    flex-wrap: wrap;
+}
+
+.hero-status {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hero-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--hp-text);
+    line-height: 1.2;
+}
+
+.hero-url {
+    font-size: 13px;
+    color: var(--hp-text-muted);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    word-break: break-all;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Metrics grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--hp-card-border);
+    background: var(--hp-bg);
+}
+
+.metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 24px;
+    border-right: 1px solid var(--hp-card-border);
+    transition: background var(--hp-transition-fast);
+
+    &:last-child {
+        border-right: none;
+    }
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.015);
+
+        [data-theme="dark"] & {
+            background: rgba(255, 255, 255, 0.015);
+        }
+    }
+}
+
+.metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--hp-text-muted);
+}
+
+.metric-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--hp-text);
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .status-ok {
+        color: var(--hp-success);
+    }
+
+    .status-bad {
+        color: var(--hp-error);
+    }
+
+    .status-missing {
+        color: var(--hp-text-muted);
+    }
+}
+
+.metric-unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--hp-text-muted);
+}
+
+.metric-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    color: var(--hp-text-muted);
+    font-size: 14px;
+}
+
+/* Detail sections */
+.detail-section {
+    margin-bottom: 24px;
+
+    .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--hp-text-muted);
+        margin-bottom: 12px;
+        padding-left: 4px;
+    }
+}
+
+/* Config card */
+.config-card {
+    background: var(--hp-card-bg);
+    border: 1px solid var(--hp-card-border);
+    border-radius: var(--hp-radius);
+    overflow: hidden;
+    box-shadow: var(--hp-shadow-sm);
+}
+
+.config-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--hp-card-border);
+    transition: background var(--hp-transition-fast);
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.015);
+
+        [data-theme="dark"] & {
+            background: rgba(255, 255, 255, 0.015);
+        }
+    }
+}
+
+.config-key {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--hp-text-muted);
+    white-space: nowrap;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.config-value {
+    font-size: 13px;
+    color: var(--hp-text);
+    text-align: right;
+    word-break: break-all;
+}
+
+.config-empty {
+    color: var(--hp-text-muted);
+    font-style: italic;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.config-tag {
+    display: inline-flex;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    background: var(--hp-bg);
+    border: 1px solid var(--hp-card-border);
+    border-radius: 4px;
+    color: var(--hp-text-secondary);
+}
+
+/* Not found */
+.not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .hero-body {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metric-card {
+        border-right: none;
+        border-bottom: 1px solid var(--hp-card-border);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .hero-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}

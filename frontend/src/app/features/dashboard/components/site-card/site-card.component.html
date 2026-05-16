@@ -1,0 +1,66 @@
+<nz-card
+    class="site-card"
+    [nzHoverable]="true"
+    [style.border-left-color]="$borderColor()"
+    (click)="navigateToDetail()">
+    <div class="card-body">
+        <div class="card-top">
+            <health-prober-status-indicator
+                [status]="$status() ?? HealthStatus.EntirelyOut"
+                [isCors]="$latestResult()?.outcome === 'cors'"
+                [lastChecked]="$lastCheckedText()"/>
+
+            <div class="card-actions">
+                <button
+                    nz-button
+                    nzType="text"
+                    nzSize="small"
+                    class="action-btn"
+                    (click)="edit($event)"
+                    nz-tooltip
+                    nzTooltipTitle="Edit">
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+                <button
+                    nz-button
+                    nzType="text"
+                    nzSize="small"
+                    class="action-btn action-btn--danger"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Delete this site?"
+                    (nzOnConfirm)="delete()"
+                    nz-tooltip
+                    nzTooltipTitle="Delete">
+                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="site-info">
+            <h4 class="site-name">{{ $site().name }}</h4>
+            <span class="site-url" nz-tooltip [nzTooltipTitle]="$site().endpoints[0]?.url">
+                {{ $site().endpoints[0]?.url }}
+            </span>
+        </div>
+
+        <div class="metrics">
+            @if ($hasValidResponse()) {
+                <div class="metric">
+                    <span nz-icon nzType="thunderbolt" nzTheme="outline" class="metric-icon"></span>
+                    <span class="metric-value" [style.color]="$responseTimeColor()">
+                        {{ $latestResult()!.responseTimeMs }}<span class="metric-unit">ms</span>
+                    </span>
+                </div>
+            } @else if ($latestResult()) {
+                <div class="metric">
+                    <span nz-icon nzType="close-circle" nzTheme="outline" class="metric-icon" style="color: var(--hp-error)"></span>
+                    <span class="metric-value" style="color: var(--hp-error)">Failed</span>
+                </div>
+            }
+            <div class="metric metric--muted">
+                <span nz-icon nzType="clock-circle" nzTheme="outline" class="metric-icon"></span>
+                <span class="metric-value">{{ $lastCheckedText() }}</span>
+            </div>
+        </div>
+    </div>
+</nz-card>

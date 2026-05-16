@@ -1,0 +1,91 @@
+<div class="dashboard-page">
+    <!-- Status Summary Pills -->
+    @if ($summary().total > 0) {
+        <div class="summary-bar">
+            <button
+                class="status-pill"
+                [class.active]="$statusFilter() === 'all'"
+                (click)="setStatusFilter('all')">
+                <span class="pill-dot" style="background: var(--hp-text-muted)"></span>
+                <span class="pill-count">{{ $summary().total }}</span>
+                <span class="pill-label">All</span>
+            </button>
+            <button
+                class="status-pill"
+                [class.active]="$statusFilter() === HealthStatus.Healthy"
+                (click)="setStatusFilter(HealthStatus.Healthy)">
+                <span class="pill-dot hp-glow-success" style="background: var(--hp-success)"></span>
+                <span class="pill-count" style="color: var(--hp-success)">{{ $summary().healthy }}</span>
+                <span class="pill-label">Healthy</span>
+            </button>
+            <button
+                class="status-pill"
+                [class.active]="$statusFilter() === HealthStatus.PartiallyOut"
+                (click)="setStatusFilter(HealthStatus.PartiallyOut)">
+                <span class="pill-dot" style="background: var(--hp-warning)"></span>
+                <span class="pill-count" style="color: var(--hp-warning)">{{ $summary().partial }}</span>
+                <span class="pill-label">Partially Out</span>
+            </button>
+            <button
+                class="status-pill"
+                [class.active]="$statusFilter() === HealthStatus.EntirelyOut"
+                (click)="setStatusFilter(HealthStatus.EntirelyOut)">
+                <span class="pill-dot" style="background: var(--hp-error)"></span>
+                <span class="pill-count" style="color: var(--hp-error)">{{ $summary().out }}</span>
+                <span class="pill-label">Entirely Out</span>
+            </button>
+        </div>
+    }
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <nz-input-group [nzSuffixIcon]="'search'" class="search-input">
+                <input
+                    nz-input
+                    placeholder="Search sites..."
+                    [value]="$search()"
+                    (input)="onSearchInput($event)"/>
+            </nz-input-group>
+            <nz-select [ngModel]="$sort()" (ngModelChange)="onSortChange($event)" class="sort-select">
+                <nz-option nzValue="status" nzLabel="Status (failed first)"/>
+                <nz-option nzValue="name" nzLabel="Name (A-Z)"/>
+                <nz-option nzValue="lastChecked" nzLabel="Last checked (recent first)"/>
+            </nz-select>
+        </div>
+        <div class="toolbar-right">
+            <button nz-button nzType="default" (click)="refreshAll()" nz-tooltip nzTooltipTitle="Refresh all">
+                <span nz-icon nzType="reload" nzTheme="outline"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    @if ($sites().length === 0) {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <span nz-icon nzType="monitor" nzTheme="outline" style="font-size: 64px; color: var(--hp-text-muted)"></span>
+            </div>
+            <h2 class="empty-title">No sites are being monitored yet</h2>
+            <p class="empty-subtitle">Add a site to start tracking its health in real-time.</p>
+        </div>
+    } @else {
+        <!-- Card Grid -->
+        <div class="card-grid">
+            <div nz-row [nzGutter]="[20, 20]">
+                @for (site of $sites(); track site.id; let idx = $index) {
+                    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="12" [nzLg]="8">
+                        <health-prober-site-card
+                            class="hp-anim-fade-up"
+                            [style.animation-delay]="idx * 40 + 'ms'"
+                            [site]="site"
+                            [results]="healthState.$results()[site.id]"
+                            [status]="healthState.$statuses()[site.id]"
+                            (onEdit)="editSite($event)"
+                            (onDelete)="deleteSite($event)"/>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

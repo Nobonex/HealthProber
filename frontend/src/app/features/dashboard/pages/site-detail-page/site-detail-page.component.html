@@ -1,0 +1,134 @@
+@if ($site(); as site) {
+    <div class="detail-page">
+        <!-- Status hero card -->
+        <div class="status-hero"
+             [class.healthy]="$status() === 'Healthy'"
+             [class.warning]="$status() === 'PartiallyOut'"
+             [class.critical]="$status() === 'EntirelyOut'">
+            <div class="hero-body">
+                <div class="hero-status">
+                    <health-prober-status-indicator
+                        [status]="$status()"
+                        [isCors]="$latestResult()?.outcome === 'cors'"/>
+                    <div class="hero-meta">
+                        <h1 class="hero-name">{{ site.name }}</h1>
+                        <div class="hero-url">{{ site.endpoints[0]?.url }}</div>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <button nz-button nzType="default" (click)="refresh()">
+                        <span nz-icon nzType="reload"></span> Refresh Now
+                    </button>
+                    <button nz-button nzType="default" (click)="edit()">
+                        <span nz-icon nzType="edit"></span> Edit
+                    </button>
+                    <button nz-button nzDanger nz-popconfirm nzPopconfirmTitle="Delete this site?" (nzOnConfirm)="delete()">
+                        <span nz-icon nzType="delete"></span> Delete
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metrics grid -->
+            <div class="metrics-grid">
+                @if ($latestResult(); as result) {
+                    <div class="metric-card">
+                        <div class="metric-label">Status Code</div>
+                        <div class="metric-value">
+                            @if (result.statusCode != null) {
+                                <span [class.status-ok]="result.statusCode < 400"
+                                      [class.status-bad]="result.statusCode >= 400">
+                                    {{ result.statusCode }}
+                                </span>
+                            } @else {
+                                <span class="status-missing">-</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Response Time</div>
+                        <div class="metric-value">{{ result.responseTimeMs }}<span class="metric-unit">ms</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Last Checked</div>
+                        <div class="metric-value">{{ $lastCheckedText() }}</div>
+                    </div>
+                } @else {
+                    <div class="metric-empty">
+                        <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+                        <span>Waiting for first probe result...</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Configuration section -->
+        <div class="detail-section">
+            <h3 class="section-title">Configuration</h3>
+            <div class="config-card">
+                <div class="config-row">
+                    <span class="config-key">Endpoint</span>
+                    <span class="config-value">{{ site.endpoints[0]?.method }} {{ site.endpoints[0]?.url }}</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">Headers</span>
+                    <span class="config-value">
+                        @if (site.endpoints[0]?.headers?.length === 0) {
+                            <span class="config-empty">None</span>
+                        } @else {
+                            <div class="tag-list">
+                                @for (h of site.endpoints[0]?.headers; track $index) {
+                                    <span class="config-tag">{{ h.key }}: {{ h.value }}</span>
+                                }
+                            </div>
+                        }
+                    </span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">Query Parameters</span>
+                    <span class="config-value">
+                        @if (site.endpoints[0]?.queryParams?.length === 0) {
+                            <span class="config-empty">None</span>
+                        } @else {
+                            <div class="tag-list">
+                                @for (p of site.endpoints[0]?.queryParams; track $index) {
+                                    <span class="config-tag">{{ p.key }} = {{ p.value }}</span>
+                                }
+                            </div>
+                        }
+                    </span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">Authentication</span>
+                    <span class="config-value">{{ $auth().type }}</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">Warning Threshold</span>
+                    <span class="config-value">{{ site.warningThresholdMs }}ms</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">Critical Threshold</span>
+                    <span class="config-value">{{ site.criticalThresholdMs }}ms</span>
+                </div>
+                <div class="config-row">
+                    <span class="config-key">Polling Interval</span>
+                    <span class="config-value">
+                        @switch (site.pollingIntervalMs) {
+                            @case (0) { Off }
+                            @case (10000) { Every 10 seconds }
+                            @case (30000) { Every 30 seconds }
+                            @case (60000) { Every 1 minute }
+                            @case (300000) { Every 5 minutes }
+                            @default { {{ site.pollingIntervalMs }}ms }
+                        }
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @else {
+    <div class="not-found">
+        <nz-empty nzNotFoundContent="Site not found"/>
+        <button nz-button (click)="goToDashboard()">Back to Dashboard</button>
+    </div>
+}

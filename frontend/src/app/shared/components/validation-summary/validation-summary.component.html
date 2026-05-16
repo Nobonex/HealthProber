@@ -1,0 +1,5 @@
+<ul class="validation-summary">
+    @for (error of $validationMessages(); track $index) {
+        <li>{{ error }}</li>
+    }
+</ul>

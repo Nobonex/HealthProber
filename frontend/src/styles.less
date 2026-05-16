@@ -1,0 +1,449 @@
+@import "ng-zorro-antd/ng-zorro-antd.less";
+
+/* ================================================
+   CSS Custom Properties - HealthProber Theme System
+   ================================================ */
+
+:root {
+  /* Core colors */
+  --hp-bg: #f8fafc;
+  --hp-surface: #ffffff;
+  --hp-card-bg: #ffffff;
+  --hp-card-border: #e2e8f0;
+  --hp-card-border-hover: #cbd5e1;
+  --hp-text: #0f172a;
+  --hp-text-secondary: #475569;
+  --hp-text-muted: #94a3b8;
+  --hp-primary: #3b82f6;
+  --hp-primary-hover: #2563eb;
+  --hp-success: #10b981;
+  --hp-warning: #f59e0b;
+  --hp-error: #ef4444;
+
+  /* Header */
+  --hp-header-bg: rgba(255, 255, 255, 0.85);
+  --hp-header-border: rgba(226, 232, 240, 0.6);
+
+  /* Glow effects */
+  --hp-glow-success: rgba(16, 185, 129, 0.35);
+  --hp-glow-warning: rgba(245, 158, 11, 0.35);
+  --hp-glow-error: rgba(239, 68, 68, 0.35);
+
+  /* Shadows */
+  --hp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --hp-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --hp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --hp-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Spacing */
+  --hp-radius-sm: 6px;
+  --hp-radius: 10px;
+  --hp-radius-lg: 14px;
+
+  /* Transitions */
+  --hp-transition-fast: 150ms ease;
+  --hp-transition: 250ms ease;
+}
+
+[data-theme="dark"] {
+  --hp-bg: #0b1220;
+  --hp-surface: #111827;
+  --hp-card-bg: #151e32;
+  --hp-card-border: #1e293b;
+  --hp-card-border-hover: #334155;
+  --hp-text: #f1f5f9;
+  --hp-text-secondary: #cbd5e1;
+  --hp-text-muted: #64748b;
+  --hp-primary: #60a5fa;
+  --hp-primary-hover: #93c5fd;
+  --hp-success: #34d399;
+  --hp-warning: #fbbf24;
+  --hp-error: #f87171;
+
+  --hp-header-bg: rgba(15, 23, 42, 0.85);
+  --hp-header-border: rgba(51, 65, 85, 0.6);
+
+  --hp-glow-success: rgba(52, 211, 153, 0.4);
+  --hp-glow-warning: rgba(251, 191, 36, 0.4);
+  --hp-glow-error: rgba(248, 113, 113, 0.5);
+
+  --hp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --hp-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --hp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --hp-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* ================================================
+   Base Styles
+   ================================================ */
+
+* {
+  transition: background-color var(--hp-transition-fast),
+              border-color var(--hp-transition-fast),
+              color var(--hp-transition-fast),
+              box-shadow var(--hp-transition-fast);
+}
+
+body {
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--hp-bg);
+  color: var(--hp-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ================================================
+   Global Rounded Corners (both themes)
+   ================================================ */
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-select-dropdown,
+.ant-input-number,
+.ant-picker,
+.ant-modal-content {
+  border-radius: var(--hp-radius) !important;
+}
+
+.ant-input-number,
+.ant-picker {
+  overflow: hidden;
+}
+
+/* ================================================
+   Uniform Input / Select Heights
+   ================================================ */
+
+/* Wrapper & select get explicit height; inner input fills it */
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  height: 40px;
+  min-height: 40px;
+}
+
+.ant-select {
+  display: inline-flex;
+  height: 40px;
+}
+
+.ant-select-single.ant-select {
+  height: 40px;
+}
+
+.ant-input-affix-wrapper {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+}
+
+/* Inner input inside affix wrapper should fill naturally, not overflow */
+.ant-input-affix-wrapper .ant-input {
+  height: 100% !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.ant-select-selector {
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 14px !important;
+}
+
+.ant-select-selection-item,
+.ant-select-selection-placeholder {
+  line-height: 38px !important;
+}
+
+/* Standalone input (not inside wrapper): 40px with comfortable padding */
+.ant-input:not(.ant-input-affix-wrapper .ant-input) {
+  height: 40px;
+  min-height: 40px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* ================================================
+   ng-zorro Dark Theme Overrides
+   ================================================ */
+
+[data-theme="dark"] {
+  .ant-card {
+    background: var(--hp-card-bg);
+    border-color: var(--hp-card-border);
+    color: var(--hp-text);
+  }
+
+  .ant-card-head {
+    background: transparent;
+    border-bottom-color: var(--hp-card-border);
+    color: var(--hp-text);
+  }
+
+  .ant-modal-content,
+  .ant-modal-header {
+    background: var(--hp-surface);
+    color: var(--hp-text);
+  }
+
+  .ant-modal-title {
+    color: var(--hp-text);
+  }
+
+  .ant-modal-close {
+    color: var(--hp-text-muted);
+  }
+
+  .ant-form-item-label > label {
+    color: var(--hp-text-secondary);
+  }
+
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-number-input {
+    background: var(--hp-card-bg);
+    border-color: var(--hp-card-border);
+    color: var(--hp-text);
+  }
+
+  /* Select trigger (nz-select-top-control) — must beat ng-zorro's 
+     .ant-select:not(.ant-select-customize-input) .ant-select-selector */
+  .ant-select .ant-select-selector,
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: var(--hp-card-bg) !important;
+    border-color: var(--hp-card-border) !important;
+    color: var(--hp-text) !important;
+  }
+
+  /* Dropdown list — explicit background-color with !important */
+  .ant-select-dropdown {
+    background-color: var(--hp-card-bg) !important;
+    border-color: var(--hp-card-border) !important;
+    box-shadow: var(--hp-shadow-lg) !important;
+  }
+
+  .ant-select-dropdown .ant-select-item {
+    color: var(--hp-text) !important;
+  }
+
+  .ant-select-dropdown .ant-select-item-option-selected {
+    background-color: var(--hp-primary) !important;
+    color: #fff !important;
+  }
+
+  .ant-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+  }
+
+  .ant-select-arrow {
+    color: var(--hp-text-muted) !important;
+  }
+
+  .ant-input-group-addon {
+    background: var(--hp-surface);
+    border-color: var(--hp-card-border);
+    color: var(--hp-text-secondary);
+  }
+
+  .ant-select-item {
+    color: var(--hp-text);
+  }
+
+  .ant-select-item-option-selected {
+    background: var(--hp-primary);
+    color: #fff;
+  }
+
+  .ant-select-item-option-active {
+    background: rgba(59, 130, 246, 0.15);
+  }
+
+  .ant-tabs-tab {
+    color: var(--hp-text-muted);
+  }
+
+  .ant-tabs-tab-active {
+    color: var(--hp-primary);
+  }
+
+  .ant-tabs-ink-bar {
+    background: var(--hp-primary);
+  }
+
+  .ant-btn,
+  .ant-btn-default {
+    background: var(--hp-card-bg);
+    border-color: var(--hp-card-border);
+    color: var(--hp-text);
+  }
+
+  .ant-btn-primary {
+    background: var(--hp-primary);
+    border-color: var(--hp-primary);
+  }
+
+  .ant-btn-primary:hover {
+    background: var(--hp-primary-hover);
+    border-color: var(--hp-primary-hover);
+  }
+
+  .ant-btn-dashed {
+    background: transparent;
+    border-color: var(--hp-card-border);
+    color: var(--hp-text-secondary);
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    background: var(--hp-surface);
+    border-color: var(--hp-card-border);
+    color: var(--hp-text-secondary);
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-item-content {
+    border-color: var(--hp-card-border);
+    color: var(--hp-text);
+  }
+
+  .ant-statistic-title {
+    color: var(--hp-text-muted);
+  }
+
+  .ant-statistic-content {
+    color: var(--hp-text);
+  }
+
+  .ant-empty-description {
+    color: var(--hp-text-muted);
+  }
+
+  .ant-badge-status-text {
+    color: var(--hp-text);
+  }
+
+  .ant-popover-inner,
+  .ant-popover-title {
+    background: var(--hp-surface);
+    color: var(--hp-text);
+  }
+
+  .ant-message-notice-content {
+    background: var(--hp-surface);
+    color: var(--hp-text);
+    box-shadow: var(--hp-shadow-lg);
+  }
+
+  .ant-tooltip-inner {
+    background: var(--hp-card-bg);
+    color: var(--hp-text);
+    border: 1px solid var(--hp-card-border);
+  }
+
+  .ant-tooltip-arrow::before {
+    background: var(--hp-card-bg);
+    border-color: var(--hp-card-border);
+  }
+
+  .ant-table {
+    background: transparent;
+    color: var(--hp-text);
+  }
+
+  .ant-divider {
+    border-color: var(--hp-card-border);
+  }
+
+  .ant-modal-mask {
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  .ant-input:focus,
+  .ant-input-focused {
+    border-color: var(--hp-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  .ant-form-item-explain-error {
+    color: var(--hp-error);
+  }
+
+  .ant-btn-dangerous {
+    background: transparent;
+    border-color: var(--hp-error);
+    color: var(--hp-error);
+  }
+
+  .ant-btn-dangerous:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--hp-error);
+    color: var(--hp-error);
+  }
+
+  .ant-popover-message-title {
+    color: var(--hp-text);
+  }
+
+  .ant-popconfirm .ant-popover-inner-content {
+    background: var(--hp-surface);
+  }
+}
+
+/* ================================================
+   Overlay dark styles (dropdowns, popovers, tooltips)
+   are handled dynamically by ThemeService via a
+   runtime-injected <style> tag for bulletproof
+   application regardless of CDK overlay lifecycle.
+   ================================================ */
+
+/* Global modal mask blur (both themes) */
+.ant-modal-mask {
+  backdrop-filter: blur(4px);
+}
+
+/* ================================================
+   HealthProber Custom Components
+   ================================================ */
+
+/* Pulse animation for error status */
+@keyframes hp-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--hp-glow-error); }
+  50% { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* Card stagger animation */
+@keyframes hp-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hp-anim-fade-up {
+  animation: hp-fade-up 0.4s ease backwards;
+}
+
+/* Glow effects */
+.hp-glow-success {
+  box-shadow: 0 0 10px var(--hp-glow-success);
+}
+
+.hp-glow-warning {
+  box-shadow: 0 0 10px var(--hp-glow-warning);
+}
+
+.hp-glow-error {
+  box-shadow: 0 0 10px var(--hp-glow-error);
+  animation: hp-pulse 2s ease-in-out infinite;
+}
+
+/* Button base */
+.health-prober-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

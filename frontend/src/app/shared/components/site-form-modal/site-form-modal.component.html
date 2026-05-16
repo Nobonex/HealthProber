@@ -1,0 +1,291 @@
+<div class="modal-content">
+    <!-- Step indicator dots -->
+    <div class="wizard-steps-indicator">
+        @for (label of [ 'Basics', 'Request', 'Auth', 'Thresholds', 'Review' ]; track $index) {
+            <div class="step" [class.active]="$currentTab() === $index" [class.completed]="$currentTab() > $index">
+                <div class="step-circle">
+                    @if ($currentTab() > $index) {
+                        <span nz-icon nzType="check"></span>
+                    } @else {
+                        {{ $index + 1 }}
+                    }
+                </div>
+                <div class="step-label">{{ label }}</div>
+            </div>
+            @if ($index < 4) {
+                <div class="step-connector" [class.active]="$currentTab() > $index"></div>
+            }
+        }
+    </div>
+
+    <div class="wizard-tabs">
+        <nz-tabs [nzSelectedIndex]="$currentTab()" nzTabPosition="top" [nzAnimated]="false">
+            <nz-tab nzTitle="Basics">
+                <form nz-form [formGroup]="form" nzLayout="vertical" class="wizard-form">
+                    <nz-form-item>
+                        <nz-form-label nzRequired>Name</nz-form-label>
+                        <nz-form-control nzErrorTip="Please enter a name">
+                            <input nz-input formControlName="name" placeholder="My API"/>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <div formArrayName="endpoints">
+                        <div [formGroupName]="0">
+                            <nz-form-item>
+                                <nz-form-label nzRequired>URL</nz-form-label>
+                                <nz-form-control nzErrorTip="Please enter a valid URL">
+                                    <input nz-input formControlName="url" placeholder="https://example.com/health"/>
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item>
+                                <nz-form-label>Method</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="method">
+                                        <nz-option nzValue="GET" nzLabel="GET"/>
+                                        <nz-option nzValue="HEAD" nzLabel="HEAD"/>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+
+                    <nz-form-item>
+                        <nz-form-label>Polling Interval</nz-form-label>
+                        <nz-form-control>
+                            <nz-select formControlName="pollingIntervalMs">
+                                <nz-option nzValue="10000" nzLabel="10 seconds"/>
+                                <nz-option nzValue="30000" nzLabel="30 seconds"/>
+                                <nz-option nzValue="60000" nzLabel="1 minute"/>
+                                <nz-option nzValue="300000" nzLabel="5 minutes"/>
+                                <nz-option nzValue="0" nzLabel="Off"/>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </form>
+            </nz-tab>
+
+            <nz-tab nzTitle="Request">
+                <form nz-form [formGroup]="form" nzLayout="vertical" class="wizard-form">
+                    <div formArrayName="endpoints">
+                        <div [formGroupName]="0">
+                            <div formArrayName="headers">
+                                <div class="section-header">
+                                    <span class="section-title">Headers</span>
+                                    <span class="section-hint">Optional custom headers to send with the request</span>
+                                </div>
+                                @for (header of headersArray.controls; track $index) {
+                                    <div [formGroupName]="$index" class="dynamic-row">
+                                        <input nz-input formControlName="key" placeholder="Key" class="key-input"/>
+                                        <input nz-input formControlName="value" placeholder="Value" class="value-input"/>
+                                        <button nz-button nzType="text" (click)="removeHeader($index)" nzDanger class="remove-btn">
+                                            <span nz-icon nzType="delete"></span>
+                                        </button>
+                                    </div>
+                                }
+                                <button nz-button nzType="dashed" (click)="addHeader()" class="add-btn">
+                                    <span nz-icon nzType="plus"></span> Add Header
+                                </button>
+                            </div>
+
+                            <div formArrayName="queryParams" class="param-section">
+                                <div class="section-header">
+                                    <span class="section-title">Query Parameters</span>
+                                    <span class="section-hint">Optional query string parameters</span>
+                                </div>
+                                @for (param of queryParamsArray.controls; track $index) {
+                                    <div [formGroupName]="$index" class="dynamic-row">
+                                        <input nz-input formControlName="key" placeholder="Key" class="key-input"/>
+                                        <input nz-input formControlName="value" placeholder="Value" class="value-input"/>
+                                        <button nz-button nzType="text" (click)="removeQueryParam($index)" nzDanger class="remove-btn">
+                                            <span nz-icon nzType="delete"></span>
+                                        </button>
+                                    </div>
+                                }
+                                <button nz-button nzType="dashed" (click)="addQueryParam()" class="add-btn">
+                                    <span nz-icon nzType="plus"></span> Add Parameter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </nz-tab>
+
+            <nz-tab nzTitle="Authentication">
+                <form nz-form [formGroup]="form" nzLayout="vertical" class="wizard-form">
+                    <nz-form-item>
+                        <nz-form-label>Auth Type</nz-form-label>
+                        <nz-form-control>
+                            <nz-select formControlName="authType">
+                                <nz-option nzValue="none" nzLabel="None"/>
+                                <nz-option nzValue="bearer" nzLabel="Bearer Token"/>
+                                <nz-option nzValue="basic" nzLabel="Basic Auth"/>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    @if ($authType() === 'bearer') {
+                        <nz-form-item>
+                            <nz-form-label nzRequired>Token</nz-form-label>
+                            <nz-form-control nzErrorTip="Please enter a token">
+                                <input nz-input formControlName="bearerToken" placeholder="Paste your Bearer token"/>
+                            </nz-form-control>
+                        </nz-form-item>
+                    }
+
+                    @if ($authType() === 'basic') {
+                        <nz-form-item>
+                            <nz-form-label nzRequired>Username</nz-form-label>
+                            <nz-form-control>
+                                <input nz-input formControlName="basicUsername" placeholder="Username"/>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label nzRequired>Password</nz-form-label>
+                            <nz-form-control>
+                                <input nz-input type="password" formControlName="basicPassword" placeholder="Password"/>
+                            </nz-form-control>
+                        </nz-form-item>
+                    }
+                </form>
+            </nz-tab>
+
+            <nz-tab nzTitle="Thresholds">
+                <form nz-form [formGroup]="form" nzLayout="vertical" class="wizard-form">
+                    <div class="threshold-hint">
+                        Define response time thresholds to classify site health status.
+                    </div>
+                    <nz-form-item>
+                        <nz-form-label nzRequired>Warning Threshold (ms)</nz-form-label>
+                        <nz-form-control nzErrorTip="Must be less than critical threshold">
+                            <input nz-input type="number" formControlName="warningThresholdMs"/>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-label nzRequired>Critical Threshold (ms)</nz-form-label>
+                        <nz-form-control nzErrorTip="Must be greater than warning threshold">
+                            <input nz-input type="number" formControlName="criticalThresholdMs"/>
+                        </nz-form-control>
+                    </nz-form-item>
+                </form>
+            </nz-tab>
+
+            <nz-tab nzTitle="Review">
+                <div class="review-panel">
+                    <h3 class="review-title">Review Configuration</h3>
+
+                    <div class="review-card">
+                        <div class="review-row">
+                            <span class="review-key">Name</span>
+                            <span class="review-value">{{ $reviewData().name || '-' }}</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">URL</span>
+                            <span class="review-value">{{ $reviewData().url || '-' }}</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">Method</span>
+                            <span class="review-value">{{ $reviewData().method }}</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">Headers</span>
+                            <span class="review-value">
+                                @if ($reviewData().headers.length === 0) {
+                                    <span class="review-empty">None</span>
+                                } @else {
+                                    <ul class="review-list">
+                                        @for (h of $reviewData().headers; track $index) {
+                                            <li><code>{{ h.key }}</code> : {{ h.value }}</li>
+                                        }
+                                    </ul>
+                                }
+                            </span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">Query Params</span>
+                            <span class="review-value">
+                                @if ($reviewData().queryParams.length === 0) {
+                                    <span class="review-empty">None</span>
+                                } @else {
+                                    <ul class="review-list">
+                                        @for (p of $reviewData().queryParams; track $index) {
+                                            <li><code>{{ p.key }}</code> = {{ p.value }}</li>
+                                        }
+                                    </ul>
+                                }
+                            </span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">Auth Type</span>
+                            <span class="review-value">{{ $reviewData().authType }}</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">Warning Threshold</span>
+                            <span class="review-value">{{ $reviewData().warningThresholdMs }}ms</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-key">Critical Threshold</span>
+                            <span class="review-value">{{ $reviewData().criticalThresholdMs }}ms</span>
+                        </div>
+                    </div>
+
+                    <div class="test-section">
+                        <div class="test-header">
+                            <button nz-button nzType="default" (click)="testConnection()" [nzLoading]="$isTesting()">
+                                <span nz-icon nzType="thunderbolt"></span> Test Connection
+                            </button>
+                            <span class="test-hint">Send a probe to verify connectivity before saving</span>
+                        </div>
+
+                        @if ($testResult(); as result) {
+                            <div class="test-result-banner" [class.success]="result.outcome === 'success'" [class.warning]="result.outcome === 'slow'" [class.error]="result.outcome !== 'success' && result.outcome !== 'slow'">
+                                <div class="banner-icon">
+                                    @if (result.outcome === 'success') {
+                                        <span nz-icon nzType="check-circle" nzTheme="fill"></span>
+                                    } @else if (result.outcome === 'slow') {
+                                        <span nz-icon nzType="warning" nzTheme="fill"></span>
+                                    } @else {
+                                        <span nz-icon nzType="close-circle" nzTheme="fill"></span>
+                                    }
+                                </div>
+                                <div class="banner-content">
+                                    @if (result.outcome === 'success') {
+                                        <strong>Success</strong>
+                                        <span>HTTP {{ result.statusCode }} &middot; {{ result.responseTimeMs }}ms</span>
+                                    } @else if (result.outcome === 'slow') {
+                                        <strong>Slow Response</strong>
+                                        <span>{{ result.responseTimeMs }}ms exceeds warning threshold</span>
+                                    } @else if (result.outcome === 'cors') {
+                                        <strong>Connection Failed</strong>
+                                        <span>Could not reach site. This may be due to CORS restrictions.</span>
+                                    } @else {
+                                        <strong>Connection Failed</strong>
+                                        <span>{{ result.outcome }}</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </nz-tab>
+        </nz-tabs>
+    </div>
+
+    <div class="modal-footer">
+        @if (!$isReview()) {
+            <button nz-button nzType="default" (click)="prevTab()" [disabled]="$currentTab() === 0">
+                <span nz-icon nzType="left"></span> Back
+            </button>
+            <button nz-button nzType="primary" (click)="nextTab()">
+                Next <span nz-icon nzType="right"></span>
+            </button>
+        } @else {
+            <button nz-button nzType="default" (click)="prevTab()">
+                <span nz-icon nzType="left"></span> Edit
+            </button>
+            <button nz-button nzType="primary" (click)="save()">
+                <span nz-icon nzType="save"></span> Save Site
+            </button>
+        }
+        <button nz-button nzType="default" (click)="cancel()">Cancel</button>
+    </div>
+</div>

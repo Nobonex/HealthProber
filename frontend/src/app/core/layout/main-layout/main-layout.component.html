@@ -1,0 +1,47 @@
+<header class="hp-header">
+    <div class="hp-header-left">
+        <!-- Wordmark -->
+        <a class="hp-wordmark" routerLink="/dashboard">
+            <span class="hp-pulse-dot"></span>
+            <span class="hp-wordmark-text">HealthProber</span>
+        </a>
+
+        <!-- Back navigation (detail pages only) -->
+        @if ($backUrl()) {
+            <div class="hp-back-nav">
+                <button nz-button nzType="text" nzSize="small" (click)="navigateBack()">
+                    <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+                </button>
+                <span class="hp-page-title">{{ $title() }}</span>
+            </div>
+        }
+    </div>
+
+    <div class="hp-header-right">
+        <!-- Theme toggle -->
+        <button
+            nz-button
+            nzType="text"
+            nzSize="small"
+            class="hp-theme-toggle"
+            (click)="toggleTheme()"
+            [nzTooltipTitle]="$theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+            nz-tooltip>
+            @if ($theme() === 'dark') {
+                <span nz-icon nzType="sun" nzTheme="outline"></span>
+            } @else {
+                <span nz-icon nzType="moon" nzTheme="outline"></span>
+            }
+        </button>
+
+        <!-- Add Site button -->
+        <button nz-button nzType="primary" (click)="addSite()">
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            Add Site
+        </button>
+    </div>
+</header>
+
+<main class="hp-main">
+    <router-outlet/>
+</main>

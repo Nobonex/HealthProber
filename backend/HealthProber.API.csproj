@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
+    <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
+    <SpaRoot>..\frontend</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)\node_modules\**</DefaultItemExcludes>
+
+    <!-- Single-file publish settings -->
+    <DebugType>embedded</DebugType>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <EnableIISIntegration>false</EnableIISIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-preview.4.25258.110" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+  </ItemGroup>
+
+  <!-- Restore ASP.NET Core global usings lost when switching from Microsoft.NET.Sdk.Web -->
+  <ItemGroup>
+    <Using Include="Microsoft.AspNetCore.Builder" />
+    <Using Include="Microsoft.AspNetCore.Hosting" />
+    <Using Include="Microsoft.AspNetCore.Http" />
+    <Using Include="Microsoft.AspNetCore.Routing" />
+    <Using Include="Microsoft.Extensions.Configuration" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Hosting" />
+    <Using Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+  <!-- Exclude sidecar config files from publish output -->
+  <ItemGroup>
+    <Content Remove="appsettings.json" />
+    <None Update="appsettings.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+    <None Update="global.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <!-- Debug: ensure npm packages and copy SPA dist to output for fast iteration -->
+  <Target Name="EnsureNodeEnv" BeforeTargets="Build" Condition="!Exists('$(SpaRoot)\node_modules')">
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build this project. To continue, install Node.js from https://nodejs.org/, then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Installing npm dependencies..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
+  </Target>
+
+  <Target Name="CopySpaDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug' AND Exists('$(SpaRoot)\dist\health-prober\browser')">
+    <Exec Command="robocopy &quot;$(SpaRoot)\dist\health-prober\browser&quot; &quot;$(TargetDir)wwwroot&quot; /E /IS /IT" IgnoreExitCode="true" />
+    <Exec Command="if %ERRORLEVEL% LEQ 7 exit 0 else exit 1" />
+  </Target>
+
+  <!-- Remove IIS in-process hosting asset that leaks into single-file publish output -->
+  <Target Name="RemoveIISInProcessAsset" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Filename)' == 'aspnetcorev2_inprocess'" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Release: build SPA and zip it before compilation -->
+  <Target Name="BuildAndEmbedSpa" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' != 'Debug'">
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build this project. To continue, install Node.js from https://nodejs.org/, then restart your command prompt or IDE." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" Condition="!Exists('$(SpaRoot)\node_modules')" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
+    <Message Importance="high" Text="Zipping SPA files to $(IntermediateOutputPath)spa.zip" />
+    <Delete Files="$(IntermediateOutputPath)spa.zip" Condition="Exists('$(IntermediateOutputPath)spa.zip')" />
+    <ZipDirectory SourceDirectory="$(SpaRoot)\dist\health-prober\browser" DestinationFile="$(IntermediateOutputPath)spa.zip" />
+  </Target>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <EmbeddedResource Include="$(IntermediateOutputPath)spa.zip" LogicalName="spa.zip" />
+  </ItemGroup>
+</Project>

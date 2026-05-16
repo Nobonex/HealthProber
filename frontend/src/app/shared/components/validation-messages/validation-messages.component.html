@@ -1,0 +1,9 @@
+@let ctrl = $control();
+
+@if (ctrl.invalid && (ctrl.dirty || ctrl.touched)) {
+    @for (errorMessage of $errorMessages(); track $index) {
+        <small class="error">
+            {{ errorMessage }}
+        </small>
+    }
+}
