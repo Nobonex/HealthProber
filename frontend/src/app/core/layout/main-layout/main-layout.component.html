@@ -1,3 +1,19 @@
+@if ($updateAvailable()) {
+    <nz-alert
+        nzBanner
+        nzMessage="Update available"
+        [nzDescription]="'Version ' + $latestVersion() + ' is available. The app will restart to apply the update.'"
+        nzType="info"
+        nzShowIcon
+        [nzAction]="updateAction">
+        <ng-template #updateAction>
+            <button nz-button nzSize="small" nzType="primary" (click)="installUpdate()">
+                Install & Restart
+            </button>
+        </ng-template>
+    </nz-alert>
+}
+
 <header class="hp-header">
     <div class="hp-header-left">
         <!-- Wordmark -->

@@ -1,12 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
     <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
     <SpaRoot>..\frontend</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)\node_modules\**</DefaultItemExcludes>
+
+    <!-- Windows Forms tray icon -->
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- Versioning: overridden in CI via -p:Version=x.y.z -->
+    <Version>0.0.0-local</Version>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
 
     <!-- Single-file publish settings -->
     <DebugType>embedded</DebugType>
@@ -20,6 +27,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-preview.4.25258.110" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
   <!-- Restore ASP.NET Core global usings lost when switching from Microsoft.NET.Sdk.Web -->
@@ -32,6 +40,7 @@
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="Microsoft.Extensions.Hosting" />
     <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="System.Diagnostics" />
   </ItemGroup>
 
   <!-- Exclude sidecar config files from publish output -->
@@ -72,6 +81,7 @@
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" Condition="!Exists('$(SpaRoot)\node_modules')" />
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
     <Message Importance="high" Text="Zipping SPA files to $(IntermediateOutputPath)spa.zip" />
+    <MakeDir Directories="$(IntermediateOutputPath)" />
     <Delete Files="$(IntermediateOutputPath)spa.zip" Condition="Exists('$(IntermediateOutputPath)spa.zip')" />
     <ZipDirectory SourceDirectory="$(SpaRoot)\dist\health-prober\browser" DestinationFile="$(IntermediateOutputPath)spa.zip" />
   </Target>

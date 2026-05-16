@@ -6,9 +6,11 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { PageHeaderService } from '@app/core/services/page-header.service';
 import { ThemeService } from '@app/core/services/theme.service';
 import { SiteStorageService } from '@app/core/services/site-storage.service';
+import { UpdateService } from '@app/core/services/update.service';
 import { SiteConfig } from '@app/core/models/health-prober/site-config.model';
 import { SiteFormModalComponent } from '@app/shared/components/site-form-modal/site-form-modal.component';
 
@@ -21,6 +23,7 @@ import { SiteFormModalComponent } from '@app/shared/components/site-form-modal/s
         NzButtonModule,
         NzIconModule,
         NzTooltipModule,
+        NzAlertModule,
     ],
     styleUrls: ['./main-layout.component.less'],
 })
@@ -32,10 +35,17 @@ export class MainLayoutComponent {
     private readonly modalService = inject(NzModalService);
     private readonly message = inject(NzMessageService);
     private readonly destroyRef = inject(DestroyRef);
+    private readonly updateService = inject(UpdateService);
 
     protected readonly $title = computed(() => this.pageHeaderService.$title());
     protected readonly $backUrl = computed(() => this.pageHeaderService.$backUrl());
     protected readonly $theme = this.themeService.$theme;
+    protected readonly $updateAvailable = this.updateService.$updateAvailable;
+    protected readonly $latestVersion = this.updateService.$latestVersion;
+
+    protected installUpdate(): void {
+        this.updateService.installUpdate();
+    }
 
     protected toggleTheme(): void {
         this.themeService.toggle();
