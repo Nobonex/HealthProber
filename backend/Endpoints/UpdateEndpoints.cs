@@ -16,14 +16,14 @@ public static class UpdateEndpoints
             CancellationToken cancellationToken) =>
         {
             var update = await updateService.CheckForUpdateAsync(cancellationToken);
-            var currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var currentVersion = updateService.CurrentVersion;
             var latestVersion = update?.TargetFullRelease?.Version?.ToString();
 
             return TypedResults.Ok(new
             {
-                CurrentVersion = currentVersion?.ToString(),
+                CurrentVersion = currentVersion,
                 LatestVersion = latestVersion,
-                UpdateAvailable = latestVersion != null && currentVersion != null && latestVersion != currentVersion.ToString()
+                UpdateAvailable = latestVersion is not null && latestVersion != currentVersion
             });
         })
         .WithName("UpdateStatus")
