@@ -1,5 +1,12 @@
+:host {
+    display: contents;
+}
+
 .modal-content {
-    min-height: 400px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 /* Wizard step indicator */
@@ -89,6 +96,18 @@
 
 /* Wizard tabs */
 .wizard-tabs {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    ::ng-deep .ant-tabs {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
     ::ng-deep .ant-tabs-nav {
         pointer-events: none;
         margin-bottom: 20px;
@@ -111,6 +130,11 @@
 
     ::ng-deep .ant-tabs-nav::before {
         border-bottom-color: var(--hp-card-border);
+    }
+
+    ::ng-deep .ant-tabs-content-holder {
+        flex: 1;
+        overflow-y: auto;
     }
 }
 
@@ -378,5 +402,7 @@
     gap: 8px;
     margin-top: 20px;
     padding-top: 16px;
+    top: 100%;
+    position: static;
     border-top: 1px solid var(--hp-card-border);
 }

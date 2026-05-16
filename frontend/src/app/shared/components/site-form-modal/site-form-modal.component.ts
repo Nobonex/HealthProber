@@ -74,6 +74,15 @@ export class SiteFormModalComponent implements OnInit {
     }
 
     public ngOnInit(): void {
+        this.modalRef.updateConfig({
+            nzBodyStyle: {
+                display: 'flex',
+                flexDirection: 'column',
+                height: '560px',
+                overflow: 'hidden',
+                padding: '24px',
+            },
+        });
         if (this.site !== undefined) {
             this.patchForm(this.site);
         }
